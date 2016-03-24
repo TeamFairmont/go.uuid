@@ -224,6 +224,18 @@ func TestFromString(t *testing.T) {
 	}
 }
 
+func TestFromStringShort(t *testing.T) {
+	// Invalid 35-character UUID string
+	s1 := "6ba7b810-9dad-11d1-80b4-00c04fd430c"
+
+	for i := len(s1); i >= 0; i-- {
+		_, err := FromString(s1[:i])
+		if err == nil {
+			t.Errorf("Should return error trying to parse too short string, got %s", err)
+		}
+	}
+}
+
 func TestFromStringOrNil(t *testing.T) {
 	u := FromStringOrNil("")
 	if u != Nil {
@@ -273,6 +285,22 @@ func TestUnmarshalText(t *testing.T) {
 	err = u2.UnmarshalText(b2)
 	if err == nil {
 		t.Errorf("Should return error trying to unmarshal from empty string")
+	}
+}
+
+func TestValue(t *testing.T) {
+	u, err := FromString("6ba7b810-9dad-11d1-80b4-00c04fd430c8")
+	if err != nil {
+		t.Errorf("Error parsing UUID from string: %s", err)
+	}
+
+	val, err := u.Value()
+	if err != nil {
+		t.Errorf("Error getting UUID value: %s", err)
+	}
+
+	if val != u.String() {
+		t.Errorf("Wrong value returned, should be equal: %s and %s", val, u)
 	}
 }
 
